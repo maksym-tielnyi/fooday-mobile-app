@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fooday_mobile_app/Pages/LoginScreen.dart';
 import 'Pages/HomeScreen.dart';
 
 void main() {
@@ -11,10 +12,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'FooDay',
+      // color: Colors.red[300],
       theme: ThemeData(
         primarySwatch: Colors.deepOrange,
       ),
-      home: HomePage(),
+      home: LoginScreen(),
     );
   }
 }

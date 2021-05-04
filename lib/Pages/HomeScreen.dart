@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'AssortmentPage.dart';
+import 'MainPage/MainPage.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -11,7 +11,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   // Add navigation pages here:
   List<Widget> _navigationPages = [
-    AssortmentPage(),
+    MainPage(),
     Center(child: Text("Basket")),
     Center(child: Text("Orders")),
     Center(child: Text("Profile"))

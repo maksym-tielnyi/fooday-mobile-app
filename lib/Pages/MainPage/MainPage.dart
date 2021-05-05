@@ -5,8 +5,10 @@ import 'package:flutter/rendering.dart';
 import 'package:mysql1/mysql1.dart';
 import '../../Models/ProductCategory.dart';
 import '../../Models/ProductListItem.dart';
+import '../../Models/AssortmentSortOption.dart';
 import 'CategoryCard.dart';
 import 'ProductsGridView.dart';
+import 'FilterDialog.dart';
 
 class MainPage extends StatefulWidget {
   @override
@@ -16,12 +18,24 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  final _sortingOptions = [
+    AssortmentSortOption("За ціною", "price", "DESC", Icons.arrow_downward),
+    AssortmentSortOption("За ціною", "price", "ASC", Icons.arrow_upward),
+    AssortmentSortOption("За назвою", "name", "DESC", Icons.arrow_downward),
+    AssortmentSortOption("За назвою", "name", "ASC", Icons.arrow_upward)
+  ];
+
   Future<List<ProductCategory>> _productCategories;
   Future<List<ProductListItem>> _products;
+  Set<ProductCategory> _selectedCategories;
+  AssortmentSortOption _sortingOption;
+  String _filterQuery = "";
 
   _MainPageState() {
     _productCategories = _getProductCategoriesAsync();
     _products = _getProductsAsync();
+    _selectedCategories = Set();
+    _sortingOption = _sortingOptions[0];
   }
 
   @override
@@ -39,49 +53,127 @@ class _MainPageState extends State<MainPage> {
                   bottomRight: headerEllipseRadius)),
           child: SafeArea(
               child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 20),
+                  padding: EdgeInsets.only(bottom: 5, top: 0),
                   child: Center(
-                      child: Text("Search bar",
-                          style: Theme.of(context).textTheme.headline6))))),
+                      child: Container(
+                          width: MediaQuery.of(context).size.width - 60,
+                          height: 40,
+                          child: Material(
+                              color: Colors.transparent,
+                              child: TextFormField(
+                                initialValue: _filterQuery,
+                                onChanged: (String value) {
+                                  _filterQuery = value;
+                                },
+                                onEditingComplete: () {
+                                  setState(() {
+                                    _products = _getProductsAsync();
+                                  });
+                                },
+                                style: TextStyle(color: Colors.white),
+                                decoration: InputDecoration(
+                                    prefixIcon: Icon(Icons.search_outlined,
+                                        color: Colors.white),
+                                    focusedBorder: UnderlineInputBorder(
+                                        borderSide:
+                                            BorderSide(color: Colors.white70)),
+                                    hintText: "Пошук",
+                                    hintStyle: TextStyle(color: Colors.white70),
+                                    filled: true,
+                                    border: InputBorder.none,
+                                    hoverColor: Colors.black,
+                                    fillColor: Colors.transparent),
+                              ))))))),
       Expanded(
-          child: RefreshIndicator(
-              onRefresh: () async {
-                setState(() {
-                  _productCategories = _getProductCategoriesAsync();
-                  _products = _getProductsAsync();
-                });
-                return null;
-              },
-              child: FutureBuilder(
-                  future: Future.wait([_productCategories, _products]),
-                  builder: (BuildContext context, AsyncSnapshot snapshot) {
-                    if (snapshot.connectionState == ConnectionState.done) {
-                      if (snapshot.data[0] == null ||
-                          snapshot.data[1] == null) {
-                        return Center(child: Text("Виникла помилка"));
-                      }
-                      return Column(children: [
-                        Container(
-                            height: 50,
-                            alignment: Alignment.centerLeft,
-                            child: ListView.builder(
+          child: Column(
+        children: [
+          FutureBuilder(
+              future: _productCategories,
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (snapshot.connectionState == ConnectionState.done &&
+                    snapshot.data != null) {
+                  return Container(
+                      height: 50,
+                      alignment: Alignment.centerLeft,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            IconButton(
+                                icon: Icon(Icons.filter_list),
+                                onPressed: showFilterDialog),
+                            ListView.builder(
                               scrollDirection: Axis.horizontal,
                               shrinkWrap: true,
-                              itemCount: snapshot.data[0].length,
+                              itemCount: _selectedCategories.length,
                               itemBuilder: (BuildContext context, int index) {
-                                return CategoryCard(snapshot.data[0][index]);
+                                return CategoryCard(
+                                    _selectedCategories.toList(
+                                        growable: false)[index],
+                                    (ProductCategory category) {
+                                  setState(() {
+                                    _selectedCategories.remove(category);
+                                  });
+                                });
                               },
-                            )),
-                        Text(
-                          "Рекомендуємо:",
-                          style: Theme.of(context).textTheme.headline5,
+                            ),
+                            Card(
+                                child: DropdownButton<AssortmentSortOption>(
+                              underline: SizedBox(),
+                              onChanged: (AssortmentSortOption value) {
+                                setState(() {
+                                  _sortingOption = value;
+                                });
+                              },
+                              value: _sortingOption,
+                              items: List.generate(
+                                  _sortingOptions.length,
+                                  (index) => DropdownMenuItem(
+                                      value: _sortingOptions[index],
+                                      child: Row(children: [
+                                        Icon(_sortingOptions[index].icon),
+                                        Text(_sortingOptions[index].name)
+                                      ]))),
+                            ))
+                          ],
                         ),
-                        Expanded(child: ProductsGridView(snapshot.data[1]))
-                      ]);
-                    }
-                    return Center(child: CircularProgressIndicator());
-                  })))
+                      ));
+                }
+                return Container();
+              }),
+          Expanded(
+              child: RefreshIndicator(
+                  onRefresh: () async {
+                    setState(() {
+                      _products = _getProductsAsync();
+                    });
+                    return null;
+                  },
+                  child: FutureBuilder(
+                      future: _products,
+                      builder: (BuildContext context, AsyncSnapshot snapshot) {
+                        if (snapshot.connectionState == ConnectionState.done) {
+                          if (snapshot.data == null) {
+                            return Center(child: Text("Виникла помилка"));
+                          }
+                          return ProductsGridView(snapshot.data);
+                        }
+                        return Center(child: CircularProgressIndicator());
+                      })))
+        ],
+      ))
     ]));
+  }
+
+  void showFilterDialog() async {
+    List<ProductCategory> categories = await _productCategories;
+    await showDialog(
+        context: context,
+        builder: (BuildContext context) =>
+            FilterDialog(categories, _selectedCategories));
+    setState(() {
+      _products = _getProductsAsync();
+    });
   }
 
   Future<List<ProductCategory>> _getProductCategoriesAsync() async {
@@ -130,6 +222,37 @@ class _MainPageState extends State<MainPage> {
       return null;
     }
 
+    List<ProductListItem> result;
+    if (_filterQuery.isEmpty) {
+      result = await _getRecommendedProductsAsync(connection);
+    } else {
+      result = await _getProductsWithFiltersAsync(connection);
+    }
+    return result;
+  }
+
+  Future<List<ProductListItem>> _getProductsWithFiltersAsync(
+      MySqlConnection connection) async {
+    final ASSORTMENT_QUERY = """
+SELECT product_price.product_id, name, weight, price, image
+FROM ((SELECT product_price.product_id, MAX(start_datetime) last_change FROM product_price GROUP BY product_price.product_id) last_price 
+INNER JOIN product_price ON product_price.product_id = last_price.product_id AND product_price.start_datetime = last_price.last_change
+INNER JOIN product ON product_price.product_id = product.product_id)
+WHERE (LOCATE(?, name) > 0)
+""";
+    var results;
+    try {
+      results = await connection.query(ASSORTMENT_QUERY, [_filterQuery]);
+    } catch (e) {
+      print("Exception: ${e}");
+      rethrow;
+    }
+    connection.close();
+    return _getProductItemsFromQueryResult(results);
+  }
+
+  Future<List<ProductListItem>> _getRecommendedProductsAsync(
+      MySqlConnection connection) async {
     final ASSORTMENT_QUERY = """
 SELECT product_price.product_id, name, weight, price, image
 FROM (SELECT product_price.product_id, MAX(start_datetime) last_change FROM product_price GROUP BY product_price.product_id) last_price 
@@ -144,7 +267,10 @@ INNER JOIN product ON product_price.product_id = product.product_id;
       rethrow;
     }
     connection.close();
+    return _getProductItemsFromQueryResult(results);
+  }
 
+  List<ProductListItem> _getProductItemsFromQueryResult(dynamic results) {
     var products = List<ProductListItem>();
     for (var row in results) {
       products.add(ProductListItem(row[0], row[1], row[2], row[3], row[4]));

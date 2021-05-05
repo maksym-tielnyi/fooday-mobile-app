@@ -3,21 +3,25 @@ import 'package:fooday_mobile_app/Models/ProductCategory.dart';
 
 class CategoryCard extends StatelessWidget {
   ProductCategory _category;
+  Function(ProductCategory category) _onClick;
 
-  CategoryCard(ProductCategory category) {
-    _category = category;
-  }
+  CategoryCard(this._category, this._onClick);
 
   @override
   Widget build(BuildContext context) {
     return Card(
         child: GestureDetector(
             onTap: () {
-              print(_category.name);
+              _onClick(_category);
             },
             child: Container(
-                height: 50,
+                height: 40,
                 padding: EdgeInsetsDirectional.fromSTEB(7, 10, 7, 10),
-                child: Center(child: Text(_category.name)))));
+                child: Row(
+                  children: [
+                    Text(_category.name),
+                    Icon(Icons.clear)
+                  ],
+                ))));
   }
 }

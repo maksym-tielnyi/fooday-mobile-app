@@ -19,10 +19,10 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   final _sortingOptions = [
+    AssortmentSortOption("За назвою", "name", "ASC", Icons.arrow_downward),
+    AssortmentSortOption("За назвою", "name", "DESC", Icons.arrow_upward),
     AssortmentSortOption("За ціною", "price", "DESC", Icons.arrow_downward),
-    AssortmentSortOption("За ціною", "price", "ASC", Icons.arrow_upward),
-    AssortmentSortOption("За назвою", "name", "DESC", Icons.arrow_downward),
-    AssortmentSortOption("За назвою", "name", "ASC", Icons.arrow_upward)
+    AssortmentSortOption("За ціною", "price", "ASC", Icons.arrow_upward)
   ];
 
   Future<List<ProductCategory>> _productCategories;
@@ -113,6 +113,7 @@ class _MainPageState extends State<MainPage> {
                                     (ProductCategory category) {
                                   setState(() {
                                     _selectedCategories.remove(category);
+                                    _products = _getProductsAsync();
                                   });
                                 });
                               },
@@ -123,6 +124,7 @@ class _MainPageState extends State<MainPage> {
                               onChanged: (AssortmentSortOption value) {
                                 setState(() {
                                   _sortingOption = value;
+                                  _products = _getProductsAsync();
                                 });
                               },
                               value: _sortingOption,
@@ -171,6 +173,7 @@ class _MainPageState extends State<MainPage> {
         context: context,
         builder: (BuildContext context) =>
             FilterDialog(categories, _selectedCategories));
+
     setState(() {
       _products = _getProductsAsync();
     });
@@ -223,45 +226,27 @@ class _MainPageState extends State<MainPage> {
     }
 
     List<ProductListItem> result;
-    if (_filterQuery.isEmpty) {
-      result = await _getRecommendedProductsAsync(connection);
-    } else {
-      result = await _getProductsWithFiltersAsync(connection);
-    }
+    result = await _getProductsWithFiltersAsync(connection);
     return result;
   }
 
   Future<List<ProductListItem>> _getProductsWithFiltersAsync(
       MySqlConnection connection) async {
+    List<ProductCategory> categoriesList = _selectedCategories.isNotEmpty
+        ? _selectedCategories.toList(growable: false)
+        : await _productCategories;
+    String categoryIdList = _getCategoriesStr(categoriesList);
     final ASSORTMENT_QUERY = """
-SELECT product_price.product_id, name, weight, price, image
+SELECT product_price.product_id, name, weight, price, image, category_id
 FROM ((SELECT product_price.product_id, MAX(start_datetime) last_change FROM product_price GROUP BY product_price.product_id) last_price 
 INNER JOIN product_price ON product_price.product_id = last_price.product_id AND product_price.start_datetime = last_price.last_change
 INNER JOIN product ON product_price.product_id = product.product_id)
-WHERE (LOCATE(?, name) > 0)
+WHERE (LOCATE(?, name) > 0) AND (product.category_id IN (${categoryIdList})) 
+ORDER BY ${_sortingOption.sortingField} ${_sortingOption.sortingDirection}
 """;
     var results;
     try {
       results = await connection.query(ASSORTMENT_QUERY, [_filterQuery]);
-    } catch (e) {
-      print("Exception: ${e}");
-      rethrow;
-    }
-    connection.close();
-    return _getProductItemsFromQueryResult(results);
-  }
-
-  Future<List<ProductListItem>> _getRecommendedProductsAsync(
-      MySqlConnection connection) async {
-    final ASSORTMENT_QUERY = """
-SELECT product_price.product_id, name, weight, price, image
-FROM (SELECT product_price.product_id, MAX(start_datetime) last_change FROM product_price GROUP BY product_price.product_id) last_price 
-INNER JOIN product_price ON product_price.product_id = last_price.product_id AND product_price.start_datetime = last_price.last_change
-INNER JOIN product ON product_price.product_id = product.product_id;
-""";
-    var results;
-    try {
-      results = await connection.query(ASSORTMENT_QUERY);
     } catch (e) {
       print("Exception: ${e}");
       rethrow;
@@ -276,5 +261,16 @@ INNER JOIN product ON product_price.product_id = product.product_id;
       products.add(ProductListItem(row[0], row[1], row[2], row[3], row[4]));
     }
     return products;
+  }
+
+  String _getCategoriesStr(List<ProductCategory> categories) {
+    String selectedCategoriesStr = "";
+    for (var c in categories) {
+      selectedCategoriesStr += c.id.toString();
+      if (c != categories.last) {
+        selectedCategoriesStr += ", ";
+      }
+    }
+    return selectedCategoriesStr;
   }
 }

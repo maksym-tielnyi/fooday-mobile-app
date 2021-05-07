@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fooday_mobile_app/Models/EntryPage.dart';
 import 'package:fooday_mobile_app/Pages/LoginScreen.dart';
 import 'Pages/HomeScreen.dart';
 
@@ -14,10 +15,11 @@ class MyApp extends StatelessWidget {
       title: 'FooDay',
       // color: Colors.red[300],
       theme: ThemeData(
-        primarySwatch: Colors.deepOrange,
+        primarySwatch: Colors.red,
+        accentColor: Colors.black,
       ),
-      //home: LoginScreen(),
-      home: HomePage()
+      home: LoginScreen(),
+      // home: HomePage()
     );
   }
 }

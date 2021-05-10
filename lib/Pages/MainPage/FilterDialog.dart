@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:mysql1/mysql1.dart';
 import '../../Models/ProductCategory.dart';
-import '../../Models/ProductListItem.dart';
+import '../../Models/ProductItem.dart';
 import 'CategoryCard.dart';
 import 'ProductsGridView.dart';
 

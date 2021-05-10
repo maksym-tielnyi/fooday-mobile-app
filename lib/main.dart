@@ -18,8 +18,8 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.red,
         accentColor: Colors.black,
       ),
-      home: LoginScreen(),
-      // home: HomePage()
+      //home: LoginScreen(),
+      home: HomePage()
     );
   }
 }

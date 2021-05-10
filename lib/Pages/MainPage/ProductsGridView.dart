@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import '../../Models/ProductListItem.dart';
+import '../../Models/ProductItem.dart';
 import '../ProductCard.dart';
 
 class ProductsGridView extends StatelessWidget {
-  List<ProductListItem> _products;
+  List<ProductItem> _products;
 
-  ProductsGridView(List<ProductListItem> products) {
+  ProductsGridView(List<ProductItem> products) {
     this._products = products;
   }
 

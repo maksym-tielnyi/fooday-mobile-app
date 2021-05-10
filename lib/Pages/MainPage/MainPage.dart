@@ -3,8 +3,9 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:mysql1/mysql1.dart';
+import '../../DatabaseConnector.dart';
 import '../../Models/ProductCategory.dart';
-import '../../Models/ProductListItem.dart';
+import '../../Models/ProductItem.dart';
 import '../../Models/AssortmentSortOption.dart';
 import 'CategoryCard.dart';
 import 'ProductsGridView.dart';
@@ -26,7 +27,7 @@ class _MainPageState extends State<MainPage> {
   ];
 
   Future<List<ProductCategory>> _productCategories;
-  Future<List<ProductListItem>> _products;
+  Future<List<ProductItem>> _products;
   Set<ProductCategory> _selectedCategories;
   AssortmentSortOption _sortingOption;
   String _filterQuery = "";
@@ -180,29 +181,9 @@ class _MainPageState extends State<MainPage> {
   }
 
   Future<List<ProductCategory>> _getProductCategoriesAsync() async {
-    var settings = new ConnectionSettings(
-        host: '10.0.2.2',
-        port: 3306,
-        user: 'root',
-        password: 'YflOe234fOEM',
-        db: 'fooday');
-    MySqlConnection connection;
-    try {
-      connection = await MySqlConnection.connect(settings);
-    } catch (e) {
-      return null;
-    }
-
     final CATEGORIES_QUERY = "SELECT category_id, name FROM product_category;";
-    var results;
-    try {
-      results = await connection.query(CATEGORIES_QUERY);
-    } catch (e) {
-      print("Exception: ${e}");
-      rethrow;
-    }
-    connection.close();
-
+    var results =
+        await DatabaseConnector.getQueryResultsAsync(CATEGORIES_QUERY, null);
     List<ProductCategory> categories = List();
     for (var row in results) {
       Blob nameBlob = row[1];
@@ -211,27 +192,17 @@ class _MainPageState extends State<MainPage> {
     return categories;
   }
 
-  Future<List<ProductListItem>> _getProductsAsync() async {
-    var settings = new ConnectionSettings(
-        host: '10.0.2.2',
-        port: 3306,
-        user: 'root',
-        password: 'YflOe234fOEM',
-        db: 'fooday');
-    MySqlConnection connection;
-    try {
-      connection = await MySqlConnection.connect(settings);
-    } catch (e) {
+  Future<List<ProductItem>> _getProductsAsync() async {
+    MySqlConnection connection =
+        await DatabaseConnector.createConnectionAsync();
+    if (connection == null) {
       return null;
     }
-
-    List<ProductListItem> result;
-    result = await _getProductsWithFiltersAsync(connection);
+    List<ProductItem> result = await _getProductsWithFiltersAsync();
     return result;
   }
 
-  Future<List<ProductListItem>> _getProductsWithFiltersAsync(
-      MySqlConnection connection) async {
+  Future<List<ProductItem>> _getProductsWithFiltersAsync() async {
     List<ProductCategory> categoriesList = _selectedCategories.isNotEmpty
         ? _selectedCategories.toList(growable: false)
         : await _productCategories;
@@ -244,21 +215,16 @@ INNER JOIN product ON product_price.product_id = product.product_id)
 WHERE (LOCATE(?, name) > 0) AND (product.category_id IN (${categoryIdList})) 
 ORDER BY ${_sortingOption.sortingField} ${_sortingOption.sortingDirection}
 """;
-    var results;
-    try {
-      results = await connection.query(ASSORTMENT_QUERY, [_filterQuery]);
-    } catch (e) {
-      print("Exception: ${e}");
-      rethrow;
-    }
-    connection.close();
+    var results = await DatabaseConnector.getQueryResultsAsync(
+        ASSORTMENT_QUERY, [_filterQuery]);
+
     return _getProductItemsFromQueryResult(results);
   }
 
-  List<ProductListItem> _getProductItemsFromQueryResult(dynamic results) {
-    var products = List<ProductListItem>();
+  List<ProductItem> _getProductItemsFromQueryResult(dynamic results) {
+    var products = List<ProductItem>();
     for (var row in results) {
-      products.add(ProductListItem(row[0], row[1], row[2], row[3], row[4]));
+      products.add(ProductItem(row[0], row[1], row[2], row[3], row[4]));
     }
     return products;
   }

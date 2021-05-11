@@ -116,8 +116,8 @@ class _UserReviewWidgetState extends State<UserReviewWidget> {
         context: context,
         builder: (BuildContext context) => EditReviewDialog(_myReview));
     if (isChanged) {
+      await _pushMyReview();
       setState(() {
-        _pushMyReview();
         _onUpdate();
       });
     }

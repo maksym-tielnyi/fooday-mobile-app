@@ -67,9 +67,11 @@ flutter:
      - family:  Google_Icon
        fonts:
          - asset: Icons/Google_Icon.ttf
+         - asset: Icons/empty_basket_icon.png
      - family:  Facebook_Icon
        fonts:
          - asset: Icons/Facebook_Icon.ttf
+
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

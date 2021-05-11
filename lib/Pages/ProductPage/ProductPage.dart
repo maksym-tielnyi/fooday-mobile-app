@@ -20,10 +20,13 @@ class ProductPage extends StatefulWidget {
 class _ProductPageState extends State<ProductPage> {
   final _DIVIDER = Divider(thickness: 2, indent: 10, endIndent: 10);
   ProductItem _product;
+  bool _productInBasket;
   Future<ProductItem> _productFuture;
+  Future<bool> _productInBasketFuture;
 
   _ProductPageState(this._product) {
     _productFuture = _getProductAsync();
+    _productInBasketFuture = _getProductInBasketAsync();
   }
 
   @override
@@ -33,6 +36,7 @@ class _ProductPageState extends State<ProductPage> {
       child: RefreshIndicator(
         onRefresh: () async {
           setState(() {
+            _productInBasketFuture = _getProductInBasketAsync();
             _productFuture = _getProductAsync();
           });
         },
@@ -41,11 +45,14 @@ class _ProductPageState extends State<ProductPage> {
           child: Stack(
             children: [
               FutureBuilder(
-                future: _productFuture,
+                future: Future.wait([_productFuture, _productInBasketFuture]),
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
                   if (snapshot.connectionState == ConnectionState.done) {
-                    if (snapshot.data != null) {
-                      _product = snapshot.data;
+                    if (snapshot.data != null &&
+                        snapshot.data[0] != null &&
+                        snapshot.data[1] != null) {
+                      _product = snapshot.data[0];
+                      _productInBasket = snapshot.data[1];
                       return Column(children: [
                         ImagesCarouselView(_product),
                         _bodyWidget()
@@ -102,14 +109,7 @@ class _ProductPageState extends State<ProductPage> {
             style: Theme.of(context).textTheme.headline5),
         Text(_product.weight, style: Theme.of(context).textTheme.caption)
       ], crossAxisAlignment: CrossAxisAlignment.start),
-      RaisedButton(
-          elevation: 5,
-          color: Theme.of(context).colorScheme.primary,
-          onPressed: () {},
-          child: Padding(
-              child: Text("Додати до кошика",
-                  style: TextStyle(color: Colors.white)),
-              padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15)))
+      _basketButton()
     ]);
   }
 
@@ -137,6 +137,65 @@ class _ProductPageState extends State<ProductPage> {
         Text("Вуглеводи: ${_product.carbohydrates}")
       ],
     );
+  }
+
+  Widget _basketButton() {
+    return FutureBuilder(
+      future: _productInBasketFuture,
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.data != null) {
+            _productInBasket = snapshot.data;
+            if (_productInBasket) {
+              return OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                      side: BorderSide(
+                          color: Theme.of(context).colorScheme.primary)),
+                  onPressed: () async {
+                    await _deleteFromBasketAsync();
+                    setState(() {
+                      _productInBasketFuture = _getProductInBasketAsync();
+                    });
+                  },
+                  child: Padding(
+                      child: Text("Видалити з кошика",
+                          style: TextStyle(color: Colors.black)),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 15, horizontal: 15)));
+            }
+            return RaisedButton(
+                elevation: 5,
+                color: Theme.of(context).colorScheme.primary,
+                onPressed: () async {
+                  await _addToBasketAsync();
+                  setState(() {
+                    _productInBasketFuture = _getProductInBasketAsync();
+                  });
+                },
+                child: Padding(
+                    child: Text("Додати до кошика",
+                        style: TextStyle(color: Colors.white)),
+                    padding:
+                        EdgeInsets.symmetric(vertical: 15, horizontal: 15)));
+          }
+          return Container();
+        }
+        return Center(child: CircularProgressIndicator());
+      },
+    );
+  }
+
+  Future<bool> _getProductInBasketAsync() async {
+    // TODO: specify real user id
+    final IN_BASKET_QUERY = """
+    SELECT * FROM basket_products WHERE product_id = ? AND user_id = ?;
+    """;
+    Results results = await DatabaseConnector.getQueryResultsAsync(
+        IN_BASKET_QUERY, [_product.id, 1]);
+    if (results == null) {
+      return null;
+    }
+    return results.length == 1;
   }
 
   Future<ProductItem> _getProductAsync() async {
@@ -167,5 +226,24 @@ WHERE product_price.product_id = ?
         proteins: row["proteins"],
         fats: row["fats"],
         carbohydrates: row["carbohydrates"]);
+  }
+
+  Future<Results> _deleteFromBasketAsync() async {
+    final DELETE_QUERY = """
+    DELETE FROM basket_products WHERE product_id = ? AND user_id = ?;
+    """;
+    // TODO: specify real user id
+    return await DatabaseConnector.getQueryResultsAsync(
+        DELETE_QUERY, [_product.id, 1]);
+  }
+
+  Future<Results> _addToBasketAsync() async {
+    final ADD_QUERY = """
+    INSERT INTO basket_products (user_id, product_id, amount) 
+    VALUES (?, ?, ?); 
+    """;
+    // TODO: specify real user id
+    return await DatabaseConnector.getQueryResultsAsync(
+        ADD_QUERY, [1, _product.id, 1]);
   }
 }

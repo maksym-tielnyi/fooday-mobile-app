@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'MainPage/MainPage.dart';
+import 'BasketPage/BasketPage.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -12,7 +13,7 @@ class _HomePageState extends State<HomePage> {
   // Add navigation pages here:
   List<Widget> _navigationPages = [
     MainPage(),
-    Center(child: Text("Basket")),
+    BasketPage(),
     Center(child: Text("Orders")),
     Center(child: Text("Profile"))
   ];

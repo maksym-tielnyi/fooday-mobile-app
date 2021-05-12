@@ -3,11 +3,11 @@ import 'package:mysql1/mysql1.dart';
 class DatabaseConnector {
   static Future<MySqlConnection> createConnectionAsync() async {
     var settings = new ConnectionSettings(
-        host: '10.0.2.2',
+        host: 'sql11.freesqldatabase.com',
         port: 3306,
-        user: 'root',
-        password: 'YflOe234fOEM',
-        db: 'fooday');
+        user: 'sql11412037',
+        password: '9YXDiKr1az',
+        db: 'sql11412037');
     MySqlConnection connection;
     try {
       connection = await MySqlConnection.connect(settings);

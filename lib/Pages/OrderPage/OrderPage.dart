@@ -352,7 +352,7 @@ class _OrderPageState extends State<OrderPage> {
     SELECT * FROM promocode WHERE value LIKE ? AND active = TRUE 
     AND promocode_id NOT IN 
     (SELECT DISTINCT promocode_id FROM delivery_order 
-      WHERE user_id = ?);
+      WHERE user_id = ? AND promocode_id IS NOT NULL);
     """;
     // TODO: specify real user id
     Results results = await DatabaseConnector.getQueryResultsAsync(

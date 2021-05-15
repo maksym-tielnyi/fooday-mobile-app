@@ -18,20 +18,23 @@ class DatabaseConnector {
   }
 
   static Future<Results> getQueryResultsAsync(
-      String query, List<dynamic> params) async {
-    MySqlConnection connection = await createConnectionAsync();
-    if (connection == null) {
-      return null;
+      String query, List<dynamic> params,
+      {MySqlConnection connection}) async {
+    bool tempConnection = connection == null;
+    if (tempConnection) {
+      connection = await createConnectionAsync();
+      if (connection == null) {
+        return null;
+      }
     }
 
     Results results;
     try {
       results = await connection.query(query, params);
-    } catch (e) {
-      print("Exception: ${e}");
-      rethrow;
     } finally {
-      connection.close();
+      if (tempConnection) {
+        connection.close();
+      }
     }
     return results;
   }

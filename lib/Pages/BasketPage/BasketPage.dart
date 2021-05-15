@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mysql1/mysql1.dart';
+import '../OrderPage/OrderPage.dart';
 import '../../DatabaseConnector.dart';
 import '../../Models/ProductItem.dart';
 import '../../Models/BasketItem.dart';
@@ -21,8 +22,7 @@ class _BasketPageState extends State<BasketPage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        child: Column(//crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+        child: Column(children: [
       _headerRoundedWidget(),
       SizedBox(height: 10),
       FutureBuilder(
@@ -92,7 +92,16 @@ class _BasketPageState extends State<BasketPage> {
                 child: Padding(
                     child: Text("Замовити"),
                     padding: EdgeInsets.symmetric(vertical: 15)),
-                onPressed: () {},
+                onPressed: () async {
+                  bool basketChanged = await Navigator.push(context,
+                      MaterialPageRoute(builder: (BuildContext context) {
+                    return OrderPage(_basketItems);
+                  }));
+                  if (basketChanged != null && basketChanged) {
+                    _basketItemsFuture = _getBasketItemsAsync();
+                    setState(() {});
+                  }
+                },
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all(Colors.deepOrange),
                 )))

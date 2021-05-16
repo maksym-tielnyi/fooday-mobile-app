@@ -39,7 +39,7 @@ class _ProfileScreenState extends StatelessWidget {
                   margin: EdgeInsetsDirectional.fromSTEB(20, 10, 10, 0),
                   child: Icon(
                     Icons.account_circle,
-                    size: 90,
+                    size: 60,
                   ),
                 ),
                 Text(
@@ -136,7 +136,7 @@ class _ProfileScreenState extends StatelessWidget {
                   border: Border.all(width: 4, color: Colors.black)),
             ),
             Container(
-              margin: EdgeInsetsDirectional.fromSTEB(20, 10, 20, 0),
+              margin: EdgeInsetsDirectional.fromSTEB(20, 10, 20, 14),
               child: Column(
                 children: [
                   Container(
@@ -169,6 +169,20 @@ class _ProfileScreenState extends StatelessWidget {
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(30)),
                   border: Border.all(width: 4, color: Colors.black)),
+            ),
+            Container(
+              child: ElevatedButton(
+                onPressed: () {
+                },
+                style: ElevatedButton.styleFrom(
+                    minimumSize: Size(100, 50),
+                    side: BorderSide(color: Colors.red),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30))),
+                child: Text(
+                  "Зберегти зміни",
+                ),
+              ),
             ),
           ],
         ),

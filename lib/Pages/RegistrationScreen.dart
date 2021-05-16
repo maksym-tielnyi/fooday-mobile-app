@@ -34,17 +34,17 @@ class _RegistrationScreenState extends StatelessWidget {
                     child: Padding(
                         padding: EdgeInsets.symmetric(vertical: 20),
                         child: Center(
-                            child: Text("Регистрация",
+                            child: Text("Реєстрація",
                                 style:
                                 Theme.of(context).textTheme.headline6))))),
             Container(
               height: 50,
-              margin: EdgeInsetsDirectional.fromSTEB(40, 110, 40, 0),
+              margin: EdgeInsetsDirectional.fromSTEB(40, 80, 40, 0),
               padding: EdgeInsetsDirectional.fromSTEB(20, 5, 10, 5),
               child: TextField(
                 decoration: InputDecoration(
                   border: InputBorder.none,
-                  hintText: "Введите почту",
+                  hintText: "Введіть логін",
                   filled: false,
                 ),
               ),
@@ -61,7 +61,24 @@ class _RegistrationScreenState extends StatelessWidget {
               child: TextField(
                 decoration: InputDecoration(
                   border: InputBorder.none,
-                  hintText: "Введите логин",
+                  hintText: "Введіть пошту",
+                  filled: false,
+                ),
+              ),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(100)),
+                color: Colors.redAccent,
+              ),
+              // TextBox.fromLTRBD(30, 10, 100, 10, TextDirection.ltr),
+            ),
+            Container(
+              height: 50,
+              margin: EdgeInsetsDirectional.fromSTEB(40, 40, 40, 0),
+              padding: EdgeInsetsDirectional.fromSTEB(20, 5, 10, 5),
+              child: TextField(
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: "Введіть номер телефону",
                   filled: false,
                 ),
               ),
@@ -133,7 +150,6 @@ class _RegistrationScreenState extends StatelessWidget {
               ),
               margin: EdgeInsetsDirectional.fromSTEB(50, 0, 45, 0),
             ),
-            SizedBox(height: 90),
           ],
         ),
       ),

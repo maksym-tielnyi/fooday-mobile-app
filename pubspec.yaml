@@ -68,6 +68,9 @@ flutter:
        fonts:
          - asset: Icons/Google_Icon.ttf
          - asset: Icons/empty_basket_icon.png
+         - asset: Icons/visa_icon.png
+         - asset: Icons/mastercard_icon.png
+         - asset: Icons/cash_icon.png
      - family:  Facebook_Icon
        fonts:
          - asset: Icons/Facebook_Icon.ttf

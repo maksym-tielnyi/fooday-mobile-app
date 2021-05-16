@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'MainPage/MainPage.dart';
 import 'BasketPage/BasketPage.dart';
+import 'ProductPage/ProfileScreen.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -15,7 +16,7 @@ class _HomePageState extends State<HomePage> {
     MainPage(),
     BasketPage(),
     Center(child: Text("Orders")),
-    Center(child: Text("Profile"))
+    ProfileScreen(),
   ];
   int _selectedIndex = 0;
 

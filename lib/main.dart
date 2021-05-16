@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fooday_mobile_app/Models/EntryPage.dart';
 import 'package:fooday_mobile_app/Pages/LoginScreen.dart';
-import 'Pages/HomeScreen.dart';
 
 void main() {
   runApp(MyApp());
@@ -19,7 +17,7 @@ class MyApp extends StatelessWidget {
         accentColor: Colors.black,
       ),
       //home: LoginScreen(),
-      home: HomePage()
+      home: LoginScreen()
     );
   }
 }

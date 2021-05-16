@@ -200,11 +200,9 @@ class _ProductPageState extends State<ProductPage> {
 
   Future<ProductItem> _getProductAsync() async {
     final PRODUCT_QUERY = """
-    SELECT *
-FROM ((SELECT product_price.product_id, MAX(start_datetime) last_change FROM product_price GROUP BY product_price.product_id) last_price 
-INNER JOIN product_price ON product_price.product_id = last_price.product_id AND product_price.start_datetime = last_price.last_change
-INNER JOIN product ON product_price.product_id = product.product_id)
-WHERE product_price.product_id = ?
+SELECT *
+FROM product
+WHERE product_id = ?
     """;
     Results results = await DatabaseConnector.getQueryResultsAsync(
         PRODUCT_QUERY, [_product.id]);

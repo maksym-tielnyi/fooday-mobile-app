@@ -126,6 +126,16 @@ class _OrderPageState extends State<OrderPage> {
           _currentStep++;
         });
       } else {
+        final SnackBar sb = SnackBar(
+            content: Row(children: [
+              Icon(Icons.done_outline_rounded, color: Colors.green),
+              SizedBox(width: 10),
+              Expanded(
+                  child: Text(
+                      "Ваше замовлення прийняте. Залишилось тільки трохи почекати!"))
+            ]),
+            duration: Duration(seconds: 5));
+        ScaffoldMessenger.of(context).showSnackBar(sb);
         Navigator.pop(context, true);
       }
     }
@@ -369,8 +379,8 @@ class _OrderPageState extends State<OrderPage> {
     MySqlConnection connection =
         await DatabaseConnector.createConnectionAsync();
     const INSERT_QUERY = """
-    INSERT INTO delivery_order (user_id, date, need_payment, address, promocode_id) 
-    VALUES (?, ?, ?, ? ,?);
+    INSERT INTO delivery_order (user_id, date, need_payment, street, house, apartment_number, promocode_id) 
+    VALUES (?, ?, ?, ?, ?, ?, ?);
     """;
     // TODO: specify real user id
     Results results = await DatabaseConnector.getQueryResultsAsync(
@@ -379,7 +389,11 @@ class _OrderPageState extends State<OrderPage> {
               1,
               DateTime.now().toString(),
               true,
-              _addressString(),
+              _orderData.street,
+              _orderData.house,
+              _orderData.apartmentNumber == null
+                  ? null
+                  : _orderData.apartmentNumber,
               _orderData.promocode != null ? _orderData.promocode.id : null
             ],
             connection: connection)
@@ -398,14 +412,19 @@ class _OrderPageState extends State<OrderPage> {
     MySqlConnection connection =
         await DatabaseConnector.createConnectionAsync();
     const INSERT_QUERY = """
-    INSERT INTO order_products (order_id, product_id, amount) 
-    VALUES (?, ?, ?);
+    INSERT INTO order_products (order_id, product_id, amount, price) 
+    VALUES (?, ?, ?, ?);
     """;
     var insertResults = await connection.queryMulti(
         INSERT_QUERY,
         List.generate(_orderData.basketItems.length, (int index) {
           var item = _orderData.basketItems[index];
-          return [_orderData.orderId, item.product.id, item.amount];
+          return [
+            _orderData.orderId,
+            item.product.id,
+            item.amount,
+            item.product.price
+          ];
         }));
     connection.close();
     const DELETE_QUERY = """

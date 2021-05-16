@@ -146,9 +146,7 @@ class _BasketPageState extends State<BasketPage> {
     const BASKET_QUERY = """
 SELECT *
 FROM basket_products 
-INNER JOIN ((SELECT product_price.product_id, MAX(start_datetime) last_change FROM product_price GROUP BY product_price.product_id) last_price 
-  INNER JOIN product_price ON product_price.product_id = last_price.product_id AND product_price.start_datetime = last_price.last_change
-  INNER JOIN product ON product_price.product_id = product.product_id) ON basket_products.product_id = product.product_id
+NATURAL JOIN product 
 WHERE user_id = ?;
     """;
     // TODO: specify real user id

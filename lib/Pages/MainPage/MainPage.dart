@@ -208,10 +208,8 @@ class _MainPageState extends State<MainPage> {
         : await _productCategories;
     String categoryIdList = _getCategoriesStr(categoriesList);
     final ASSORTMENT_QUERY = """
-SELECT product_price.product_id, name, weight, price, image, category_id
-FROM ((SELECT product_price.product_id, MAX(start_datetime) last_change FROM product_price GROUP BY product_price.product_id) last_price 
-INNER JOIN product_price ON product_price.product_id = last_price.product_id AND product_price.start_datetime = last_price.last_change
-INNER JOIN product ON product_price.product_id = product.product_id)
+SELECT product_id, name, weight, price, image, category_id
+FROM product
 WHERE (LOCATE(?, name) > 0) AND (product.category_id IN (${categoryIdList})) 
 ORDER BY ${_sortingOption.sortingField} ${_sortingOption.sortingDirection}
 """;

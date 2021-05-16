@@ -8,10 +8,22 @@ class UserOrderData {
   String apartmentNumber;
   PaymentType paymentType = PaymentType.Cash;
   Promocode promocode;
-  bool paymentValid = false;
+  bool paymentValid;
+  bool isDone;
+  double price;
+  DateTime creationDate;
+  int courierId;
 
   UserOrderData(this.basketItems,
-      {this.street = "", this.house = "", this.apartmentNumber});
+      {this.orderId,
+      this.street = "",
+      this.house = "",
+      this.apartmentNumber,
+      this.isDone = false,
+      this.paymentValid = false,
+      this.price,
+      this.creationDate,
+      this.courierId});
 }
 
 enum PaymentType { Cash, Visa }

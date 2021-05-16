@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'MainPage/MainPage.dart';
 import 'BasketPage/BasketPage.dart';
 import 'ProductPage/ProfileScreen.dart';
+import 'OrdersPage/OrdersPage.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -15,7 +16,7 @@ class _HomePageState extends State<HomePage> {
   List<Widget> _navigationPages = [
     MainPage(),
     BasketPage(),
-    Center(child: Text("Orders")),
+    OrdersPage(),
     ProfileScreen(),
   ];
   int _selectedIndex = 0;

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fooday_mobile_app/DatabaseConnector.dart';
 import 'package:fooday_mobile_app/Models/UserOrderData.dart';
+import 'package:fooday_mobile_app/Pages/OrderInfoPage/OrderInfoPage.dart';
+import 'package:fooday_mobile_app/Utils.dart';
 import 'package:mysql1/mysql1.dart';
 
 class OrdersPage extends StatefulWidget {
@@ -101,8 +103,12 @@ class _OrdersPageState extends State<OrdersPage> {
 
   Widget _orderCardWidget(UserOrderData order) {
     return GestureDetector(
-        onTap: () {
-          print("pressed");
+        onTap: () async {
+          await Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (BuildContext context) => OrderInfoPage(order)));
+          setState(() {});
         },
         child: Card(
             child: Padding(
@@ -115,7 +121,7 @@ class _OrdersPageState extends State<OrdersPage> {
                   child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(_dateTimeString(order.creationDate),
+                  Text(Utils.dateTimeString(order.creationDate),
                       style: Theme.of(context).textTheme.subtitle2),
                   Row(
                     children: [
@@ -130,7 +136,7 @@ class _OrdersPageState extends State<OrdersPage> {
                               style: TextStyle(color: Colors.grey))
                     ],
                   ),
-                  Text(_addressString(order))
+                  Text(Utils.addressString(order))
                 ],
               ))
             ],
@@ -155,7 +161,8 @@ class _OrdersPageState extends State<OrdersPage> {
         completed, SUM(price * amount) as price, courier_id 
       FROM delivery_order NATURAL JOIN order_products 
       WHERE user_id = ? 
-      GROUP BY order_id;
+      GROUP BY order_id 
+      ORDER BY date DESC;
       """;
     // TODO: specify real user id
     Results results =
@@ -181,13 +188,4 @@ class _OrdersPageState extends State<OrdersPage> {
     }
     return orders;
   }
-
-  String _dateTimeString(DateTime dt) =>
-      "${dt.day}.${dt.month}.${dt.year} ${dt.hour}:${dt.minute}";
-
-  String _addressString(UserOrderData order) =>
-      "${order.street} ${order.house}" +
-      ((order.apartmentNumber == null || order.apartmentNumber.isEmpty)
-          ? ""
-          : ", кв. ${order.apartmentNumber.toString()}");
 }

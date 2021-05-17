@@ -126,7 +126,7 @@ class _OrdersPageState extends State<OrdersPage> {
                   Row(
                     children: [
                       Expanded(
-                          child: Text("${order.price} грн.",
+                          child: Text("${_getPrice(order)} грн.",
                               style: Theme.of(context).textTheme.subtitle1)),
                       SizedBox(width: 10),
                       order.paymentValid
@@ -149,17 +149,18 @@ class _OrdersPageState extends State<OrdersPage> {
       return Icon(Icons.done, color: Colors.green);
     }
     if (order.courierId == null) {
-      return Icon(Icons.access_time, color: Colors.grey);
+      return Icon(Icons.access_time, color: Colors.yellow);
     } else {
-      return Icon(Icons.delivery_dining, color: Colors.yellow);
+      return Icon(Icons.delivery_dining, color: Colors.orange);
     }
   }
 
   Future<List<UserOrderData>> _getUserOrders() async {
     const ORDERS_QUERY = """
       SELECT order_id, date, need_payment, street, house, apartment_number, 
-        completed, SUM(price * amount) as price, courier_id 
-      FROM delivery_order NATURAL JOIN order_products 
+        completed, SUM(price * amount) as price, courier_id, discount_percent
+      FROM delivery_order NATURAL JOIN order_products NATURAL LEFT JOIN order_courier 
+        NATURAL LEFT JOIN promocode
       WHERE user_id = ? 
       GROUP BY order_id 
       ORDER BY date DESC;
@@ -180,12 +181,23 @@ class _OrdersPageState extends State<OrdersPage> {
           street: row["street"],
           house: row["house"],
           apartmentNumber: row["apartment_number"],
-          paymentValid: row["need_payment"] != 0,
+          paymentValid: row["need_payment"] == 0,
           isDone: row["completed"] != 0,
           price: row["price"],
           creationDate: row["date"],
-          courierId: row["courier_id"]));
+          courierId: row["courier_id"],
+          promocode: row["discount_percent"] == null
+              ? null
+              : Promocode(discountPercent: row["discount_percent"])));
     }
     return orders;
+  }
+
+  double _getPrice(UserOrderData order) {
+    return order.promocode == null
+        ? order.price
+        : double.parse((order.price -
+                order.price * (order.promocode.discountPercent / 100))
+            .toStringAsFixed(2));
   }
 }

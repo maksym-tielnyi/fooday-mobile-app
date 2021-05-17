@@ -23,7 +23,8 @@ class UserOrderData {
       this.paymentValid = false,
       this.price,
       this.creationDate,
-      this.courierId});
+      this.courierId,
+      this.promocode});
 }
 
 enum PaymentType { Cash, Visa }

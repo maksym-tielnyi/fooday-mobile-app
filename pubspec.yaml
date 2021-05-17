@@ -24,6 +24,7 @@ dependencies:
   mysql1: ^0.19.2
   carousel_slider: ^3.0.0
   flutter_simple_rating_bar: 0.0.3
+  google_sign_in: ^5.0.3
   flutter:
     sdk: flutter
 
@@ -45,7 +46,7 @@ flutter:
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
-   uses-material-design: true
+  uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
   # assets:
@@ -63,17 +64,17 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-   fonts:
-     - family:  Google_Icon
-       fonts:
-         - asset: Icons/Google_Icon.ttf
-         - asset: Icons/empty_basket_icon.png
-         - asset: Icons/visa_icon.png
-         - asset: Icons/mastercard_icon.png
-         - asset: Icons/cash_icon.png
-     - family:  Facebook_Icon
-       fonts:
-         - asset: Icons/Facebook_Icon.ttf
+  fonts:
+    - family:  Google_Icon
+      fonts:
+        - asset: Icons/Google_Icon.ttf
+        - asset: Icons/empty_basket_icon.png
+        - asset: Icons/visa_icon.png
+        - asset: Icons/mastercard_icon.png
+        - asset: Icons/cash_icon.png
+    - family:  Facebook_Icon
+      fonts:
+        - asset: Icons/Facebook_Icon.ttf
 
   #
   # For details regarding fonts from package dependencies,

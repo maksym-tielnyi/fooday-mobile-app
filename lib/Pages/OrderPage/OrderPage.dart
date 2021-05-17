@@ -354,7 +354,7 @@ class _OrderPageState extends State<OrderPage> {
     if (_orderData.promocode != null) {
       sum -= (sum * (_orderData.promocode.discountPercent / 100));
     }
-    return sum;
+    return double.parse(sum.toStringAsFixed(2));
   }
 
   Future<Promocode> _checkPromocodeAsync() async {

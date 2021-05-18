@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
         accentColor: Colors.black,
       ),
       //home: LoginScreen(),
-      home: CourierOrdersPage()
+      home: LoginScreen()
     );
   }
 }

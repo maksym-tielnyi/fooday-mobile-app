@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "501367131765",
+    "project_id": "fooday-314016",
+    "storage_bucket": "fooday-314016.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:501367131765:android:de411cdd51dc62b63af23c",
+        "android_client_info": {
+          "package_name": "com.example.fooday_mobile_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "501367131765-p3t24ik1ekd35j9r2g9k85r7r7om3dsd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.fooday_mobile_app",
+            "certificate_hash": "ce465effc6e536b1e0eada388d83e891afcbc485"
+          }
+        },
+        {
+          "client_id": "501367131765-rr597dinschg0b984qdgh3lg5c5u2kcg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.fooday_mobile_app",
+            "certificate_hash": "c7ef2f847f18378733f030edce5d6d2181614f9d"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCAu4S4If7I1rrKIjWHpsoK8daTA6w08k4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

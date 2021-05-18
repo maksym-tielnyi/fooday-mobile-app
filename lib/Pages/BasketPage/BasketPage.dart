@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fooday_mobile_app/UserDataStorage.dart';
 import 'package:mysql1/mysql1.dart';
 import '../OrderPage/OrderPage.dart';
 import '../../DatabaseConnector.dart';
@@ -149,9 +150,9 @@ FROM basket_products
 NATURAL JOIN product 
 WHERE user_id = ?;
     """;
-    // TODO: specify real user id
+    int userId = await UserDataStorage().getIdAsync();
     Results results =
-        await DatabaseConnector.getQueryResultsAsync(BASKET_QUERY, [1]);
+        await DatabaseConnector.getQueryResultsAsync(BASKET_QUERY, [userId]);
     if (results == null) {
       return null;
     }

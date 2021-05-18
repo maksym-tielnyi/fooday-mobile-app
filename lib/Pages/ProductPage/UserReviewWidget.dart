@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fooday_mobile_app/DatabaseConnector.dart';
 import 'package:fooday_mobile_app/Pages/ProductPage/EditReviewDialog.dart';
+import 'package:fooday_mobile_app/UserDataStorage.dart';
 import 'package:mysql1/mysql1.dart';
 import 'package:flutter_simple_rating_bar/flutter_simple_rating_bar.dart';
 import '../../Models/ProductItem.dart';
@@ -148,10 +149,10 @@ class _UserReviewWidgetState extends State<UserReviewWidget> {
     VALUES (?, ?, ?, ?);
     """;
 
-    // TODO: specify real user id
+    int userId = await UserDataStorage().getIdAsync();
     await DatabaseConnector.getQueryResultsAsync(
         _myReview.exists ? UPDATE_MY_REVIEW_QUERY : INSERT_MY_REVIEW_QUERY,
-        [_myReview.stars, _myReview.text, _product.id, 1]);
+        [_myReview.stars, _myReview.text, _product.id, userId]);
     setState(() {
       _onUpdate();
     });
@@ -161,9 +162,9 @@ class _UserReviewWidgetState extends State<UserReviewWidget> {
     final DELTE_MY_REVIEW_QUERY = """
     DELETE FROM product_review WHERE product_id = ? AND user_id = ?;
     """;
-    // TODO: specify real user id
+    int userId = await UserDataStorage().getIdAsync();
     await DatabaseConnector.getQueryResultsAsync(
-        DELTE_MY_REVIEW_QUERY, [_product.id, 1]);
+        DELTE_MY_REVIEW_QUERY, [_product.id, userId]);
   }
 
   Future<bool> _getReviewingPermissionAsync() async {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fooday_mobile_app/DatabaseConnector.dart';
 import 'package:fooday_mobile_app/Models/UserOrderData.dart';
 import 'package:fooday_mobile_app/Pages/OrderInfoPage/OrderInfoPage.dart';
+import 'package:fooday_mobile_app/UserDataStorage.dart';
 import 'package:fooday_mobile_app/Utils.dart';
 import 'package:mysql1/mysql1.dart';
 
@@ -158,16 +159,16 @@ class _OrdersPageState extends State<OrdersPage> {
   Future<List<UserOrderData>> _getUserOrders() async {
     const ORDERS_QUERY = """
       SELECT order_id, date, need_payment, street, house, apartment_number, 
-        completed, SUM(price * amount) as price, courier_id, discount_percent
+        completed, SUM(price * amount) as price, courier_id, discount_percent 
       FROM delivery_order NATURAL JOIN order_products NATURAL LEFT JOIN order_courier 
-        NATURAL LEFT JOIN promocode
+        NATURAL LEFT JOIN promocode 
       WHERE user_id = ? 
       GROUP BY order_id 
       ORDER BY date DESC;
       """;
-    // TODO: specify real user id
+    int userId = await UserDataStorage().getIdAsync();
     Results results =
-        await DatabaseConnector.getQueryResultsAsync(ORDERS_QUERY, [1]);
+        await DatabaseConnector.getQueryResultsAsync(ORDERS_QUERY, [userId]);
 
     return _userOrderFromResults(results);
   }

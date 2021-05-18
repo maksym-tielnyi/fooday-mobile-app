@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fooday_mobile_app/UserDataStorage.dart';
 import 'package:mysql1/mysql1.dart';
 import '../../DatabaseConnector.dart';
 import '../../Models/ProductItem.dart';
@@ -47,6 +48,12 @@ class _ProductPageState extends State<ProductPage> {
               FutureBuilder(
                 future: Future.wait([_productFuture, _productInBasketFuture]),
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  Widget imageWidget;
+                  try {
+                    imageWidget = Image.memory(_product.imageBlob.toBytes());
+                  } catch (e) {
+                    imageWidget = Icon(Icons.fastfood);
+                  }
                   if (snapshot.connectionState == ConnectionState.done) {
                     if (snapshot.data != null &&
                         snapshot.data[0] != null &&
@@ -54,7 +61,7 @@ class _ProductPageState extends State<ProductPage> {
                       _product = snapshot.data[0];
                       _productInBasket = snapshot.data[1];
                       return Column(children: [
-                        ImagesCarouselView(_product),
+                        imageWidget,
                         _bodyWidget()
                       ]);
                     }
@@ -186,12 +193,12 @@ class _ProductPageState extends State<ProductPage> {
   }
 
   Future<bool> _getProductInBasketAsync() async {
-    // TODO: specify real user id
+    int userId = await UserDataStorage().getIdAsync();
     final IN_BASKET_QUERY = """
     SELECT * FROM basket_products WHERE product_id = ? AND user_id = ?;
     """;
     Results results = await DatabaseConnector.getQueryResultsAsync(
-        IN_BASKET_QUERY, [_product.id, 1]);
+        IN_BASKET_QUERY, [_product.id, userId]);
     if (results == null) {
       return null;
     }
@@ -230,9 +237,9 @@ WHERE product_id = ?
     final DELETE_QUERY = """
     DELETE FROM basket_products WHERE product_id = ? AND user_id = ?;
     """;
-    // TODO: specify real user id
+    int userId = await UserDataStorage().getIdAsync();
     return await DatabaseConnector.getQueryResultsAsync(
-        DELETE_QUERY, [_product.id, 1]);
+        DELETE_QUERY, [_product.id, userId]);
   }
 
   Future<Results> _addToBasketAsync() async {
@@ -240,8 +247,8 @@ WHERE product_id = ?
     INSERT INTO basket_products (user_id, product_id, amount) 
     VALUES (?, ?, ?); 
     """;
-    // TODO: specify real user id
+    int userId = await UserDataStorage().getIdAsync();
     return await DatabaseConnector.getQueryResultsAsync(
-        ADD_QUERY, [1, _product.id, 1]);
+        ADD_QUERY, [userId, _product.id, userId]);
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fooday_mobile_app/UserDataStorage.dart';
 import 'package:mysql1/mysql1.dart';
 import '../../DatabaseConnector.dart';
 import '../../Models/UserOrderData.dart';
@@ -364,9 +365,9 @@ class _OrderPageState extends State<OrderPage> {
     (SELECT DISTINCT promocode_id FROM delivery_order 
       WHERE user_id = ? AND promocode_id IS NOT NULL);
     """;
-    // TODO: specify real user id
+    int userId = await UserDataStorage().getIdAsync();
     Results results = await DatabaseConnector.getQueryResultsAsync(
-        PROMOCODE_QUERY, [_promocodeInput, 1]);
+        PROMOCODE_QUERY, [_promocodeInput, userId]);
     if (results.length == 1) {
       var row = results.toList(growable: false)[0];
       return Promocode(
@@ -382,11 +383,11 @@ class _OrderPageState extends State<OrderPage> {
     INSERT INTO delivery_order (user_id, date, need_payment, street, house, apartment_number, promocode_id) 
     VALUES (?, ?, ?, ?, ?, ?, ?);
     """;
-    // TODO: specify real user id
+    int userId = await UserDataStorage().getIdAsync();
     Results results = await DatabaseConnector.getQueryResultsAsync(
             INSERT_QUERY,
             [
-              1,
+              userId,
               DateTime.now().toString(),
               true,
               _orderData.street,
@@ -430,9 +431,9 @@ class _OrderPageState extends State<OrderPage> {
     const DELETE_QUERY = """
     DELETE FROM basket_products WHERE user_id = ?
     """;
-    // TODO: specify real user id
+    int userId = await UserDataStorage().getIdAsync();
     var deleteResults =
-        await DatabaseConnector.getQueryResultsAsync(DELETE_QUERY, [1]);
+        await DatabaseConnector.getQueryResultsAsync(DELETE_QUERY, [userId]);
     return true;
   }
 }

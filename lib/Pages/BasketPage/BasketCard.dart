@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fooday_mobile_app/UserDataStorage.dart';
 import 'package:mysql1/mysql1.dart';
 import '../../DatabaseConnector.dart';
 import '../../Models/BasketItem.dart';
@@ -97,9 +98,9 @@ class BasketCard extends StatelessWidget {
     UPDATE basket_products SET amount = ? WHERE product_id = ? AND user_id = ?;
     """;
     BasketItem item = _basket[_index];
-    // TODO: specify real user id
+    int userId = await UserDataStorage().getIdAsync();
     Results results = await DatabaseConnector.getQueryResultsAsync(
-        SET_AMOUNT_QUERY, [item.amount, item.product.id, 1]);
+        SET_AMOUNT_QUERY, [item.amount, item.product.id, userId]);
     return true;
   }
 
@@ -108,9 +109,9 @@ class BasketCard extends StatelessWidget {
     DELETE FROM basket_products WHERE product_id = ? AND user_id = ?;
     """;
     BasketItem item = _basket[_index];
-    // TODO: specify real user id
+    int userId = await UserDataStorage().getIdAsync();
     Results results = await DatabaseConnector.getQueryResultsAsync(
-        DELETE_ITEM_QUERY, [item.product.id, 1]);
+        DELETE_ITEM_QUERY, [item.product.id, userId]);
     return true;
   }
 }

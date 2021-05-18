@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fooday_mobile_app/Pages/CourierPage.dart';
 import 'package:fooday_mobile_app/Pages/LoginScreen.dart';
 
 void main() {
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
         accentColor: Colors.black,
       ),
       //home: LoginScreen(),
-      home: LoginScreen()
+      home: CourierOrdersPage()
     );
   }
 }

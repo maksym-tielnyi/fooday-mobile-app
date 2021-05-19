@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:fooday_mobile_app/Pages/CourierPage.dart';
 import 'package:fooday_mobile_app/UserDataStorage.dart';
 import 'package:fooday_mobile_app/DatabaseConnector.dart';
 import 'package:fooday_mobile_app/facebook__icon_icons.dart';
@@ -198,6 +199,12 @@ class _LoginScreenState extends State<LoginScreen> {
           Navigator.pushAndRemoveUntil(context,
               MaterialPageRoute(builder: (BuildContext context) {
             return HomePage();
+          }), (route) => false);
+          break;
+        case "courier":
+          Navigator.pushAndRemoveUntil(context,
+              MaterialPageRoute(builder: (BuildContext context) {
+            return CourierOrdersPage();
           }), (route) => false);
           break;
         default:

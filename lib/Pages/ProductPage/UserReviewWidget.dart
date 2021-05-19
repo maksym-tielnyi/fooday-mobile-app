@@ -101,12 +101,14 @@ class _UserReviewWidgetState extends State<UserReviewWidget> {
         SizedBox(height: 5),
         Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
           TextButton(child: Text("Змінити"), onPressed: _onDialogPressed),
-          TextButton(child: Text("Видалити"), onPressed: () {
-            setState(() {
-              _deleteMyReview();
-              _onUpdate();
-            });
-          })
+          TextButton(
+              child: Text("Видалити"),
+              onPressed: () {
+                setState(() {
+                  _deleteMyReview();
+                  _onUpdate();
+                });
+              })
         ])
       ],
     );
@@ -177,8 +179,9 @@ class _UserReviewWidgetState extends State<UserReviewWidget> {
     SELECT stars, review FROM product_review 
     WHERE user_id = ? AND product_id = ?;
     """;
+    int userId = await UserDataStorage().getIdAsync();
     Results results = await DatabaseConnector.getQueryResultsAsync(
-        MY_REVIEW_QUERY, [1, _product.id]);
+        MY_REVIEW_QUERY, [userId, _product.id]);
     return _queryResultsToReviewAsync(results);
   }
 

@@ -3,7 +3,6 @@ import 'package:fooday_mobile_app/UserDataStorage.dart';
 import 'package:mysql1/mysql1.dart';
 import '../../DatabaseConnector.dart';
 import '../../Models/ProductItem.dart';
-import 'ImagesCarouselView.dart';
 import 'ProductRatingWidget.dart';
 import 'UserReviewWidget.dart';
 
@@ -249,6 +248,6 @@ WHERE product_id = ?
     """;
     int userId = await UserDataStorage().getIdAsync();
     return await DatabaseConnector.getQueryResultsAsync(
-        ADD_QUERY, [userId, _product.id, userId]);
+        ADD_QUERY, [userId, _product.id, 1]);
   }
 }

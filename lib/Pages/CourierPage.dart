@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fooday_mobile_app/DatabaseConnector.dart';
 import 'package:fooday_mobile_app/Models/UserOrderData.dart';
+import 'package:fooday_mobile_app/Pages/CourierOrderInfoPage/CourierOrderInfoPage.dart';
 import 'package:fooday_mobile_app/Pages/OrderInfoPage/OrderInfoPage.dart';
 import 'package:fooday_mobile_app/Utils.dart';
 import 'package:mysql1/mysql1.dart';
@@ -22,52 +23,52 @@ class _CourierOrdersPageState extends State<CourierOrdersPage> {
     return Scaffold(
       body: Container(
           child: Column(children: [
-            _headerRoundedWidget(),
-            SizedBox(height: 10),
-            DefaultTabController(
-                length: 2,
-                initialIndex: 0,
-                child: Column(
-                  children: [
-                    FutureBuilder(
-                        future: _myOrdersFuture,
-                        builder: (BuildContext context, AsyncSnapshot snapshot) {
-                          if (snapshot.hasData) {
-                            _myOrdersAll = snapshot.data;
-                            _myOrdersInProcess = [];
-                            _myOrdersDone = [];
-                            for (var order in _myOrdersAll) {
-                              if (order.isDone) {
-                                _myOrdersDone.add(order);
-                              } else {
-                                _myOrdersInProcess.add(order);
-                              }
-                            }
-                            return Column(children: [
-                              Container(
-                                  child: TabBar(
-                                      labelColor: Colors.black,
-                                      tabs: const [
-                                        Tab(text: "У процесі"),
-                                        Tab(text: "Завершені")
-                                      ])),
-                              Container(
-                                height: MediaQuery.of(context).size.height - 200,
-                                child: TabBarView(children: [
-                                  Container(
-                                      child: _ordersListWidget(_myOrdersInProcess)),
-                                  Container(child: _ordersListWidget(_myOrdersDone))
-                                ]),
-                              )
-                            ]);
-                          } else if (snapshot.hasError) {
-                            return Center(child: Text("Виникла помилка"));
+        _headerRoundedWidget(),
+        SizedBox(height: 10),
+        DefaultTabController(
+            length: 2,
+            initialIndex: 0,
+            child: Column(
+              children: [
+                FutureBuilder(
+                    future: _myOrdersFuture,
+                    builder: (BuildContext context, AsyncSnapshot snapshot) {
+                      if (snapshot.hasData) {
+                        _myOrdersAll = snapshot.data;
+                        _myOrdersInProcess = [];
+                        _myOrdersDone = [];
+                        for (var order in _myOrdersAll) {
+                          if (order.isDone) {
+                            _myOrdersDone.add(order);
+                          } else {
+                            _myOrdersInProcess.add(order);
                           }
-                          return Center(child: CircularProgressIndicator());
-                        })
-                  ],
-                ))
-          ])),
+                        }
+                        return Column(children: [
+                          Container(
+                              child: TabBar(
+                                  labelColor: Colors.black,
+                                  tabs: const [
+                                Tab(text: "У процесі"),
+                                Tab(text: "Завершені")
+                              ])),
+                          Container(
+                            height: MediaQuery.of(context).size.height - 200,
+                            child: TabBarView(children: [
+                              Container(
+                                  child: _ordersListWidget(_myOrdersInProcess)),
+                              Container(child: _ordersListWidget(_myOrdersDone))
+                            ]),
+                          )
+                        ]);
+                      } else if (snapshot.hasError) {
+                        return Center(child: Text("Виникла помилка"));
+                      }
+                      return Center(child: CircularProgressIndicator());
+                    })
+              ],
+            ))
+      ])),
     );
   }
 
@@ -109,41 +110,42 @@ class _CourierOrdersPageState extends State<CourierOrdersPage> {
           await Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (BuildContext context) => OrderInfoPage(order)));
+                  builder: (BuildContext context) =>
+                      CourierOrderInfoPage(order)));
           setState(() {});
         },
         child: Card(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-              child: Row(
+          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+          child: Row(
+            children: [
+              _orderIcon(order),
+              SizedBox(width: 7),
+              Expanded(
+                  child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  _orderIcon(order),
-                  SizedBox(width: 7),
-                  Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Text(Utils.dateTimeString(order.creationDate),
-                              style: Theme.of(context).textTheme.subtitle2),
-                          Row(
-                            children: [
-                              Expanded(
-                                  child: Text("${_getPrice(order)} грн.",
-                                      style: Theme.of(context).textTheme.subtitle1)),
-                              SizedBox(width: 10),
-                              order.paymentValid
-                                  ? Text("Сплачено",
-                                  style: TextStyle(color: Colors.green))
-                                  : Text("Не сплачено",
-                                  style: TextStyle(color: Colors.grey))
-                            ],
-                          ),
-                          Text(Utils.addressString(order))
-                        ],
-                      ))
+                  Text(Utils.dateTimeString(order.creationDate),
+                      style: Theme.of(context).textTheme.subtitle2),
+                  Row(
+                    children: [
+                      Expanded(
+                          child: Text("${_getPrice(order)} грн.",
+                              style: Theme.of(context).textTheme.subtitle1)),
+                      SizedBox(width: 10),
+                      order.paymentValid
+                          ? Text("Сплачено",
+                              style: TextStyle(color: Colors.green))
+                          : Text("Не сплачено",
+                              style: TextStyle(color: Colors.grey))
+                    ],
+                  ),
+                  Text(Utils.addressString(order))
                 ],
-              ),
-            )));
+              ))
+            ],
+          ),
+        )));
   }
 
   Icon _orderIcon(UserOrderData order) {
@@ -169,7 +171,7 @@ class _CourierOrdersPageState extends State<CourierOrdersPage> {
       """;
     // TODO: specify real user id
     Results results =
-    await DatabaseConnector.getQueryResultsAsync(ORDERS_QUERY, [2]);
+        await DatabaseConnector.getQueryResultsAsync(ORDERS_QUERY, [2]);
 
     return _userOrderFromResults(results);
   }
@@ -199,7 +201,7 @@ class _CourierOrdersPageState extends State<CourierOrdersPage> {
     return order.promocode == null
         ? order.price
         : double.parse((order.price -
-        order.price * (order.promocode.discountPercent / 100))
-        .toStringAsFixed(2));
+                order.price * (order.promocode.discountPercent / 100))
+            .toStringAsFixed(2));
   }
 }

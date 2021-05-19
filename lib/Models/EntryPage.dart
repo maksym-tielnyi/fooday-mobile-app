@@ -6,7 +6,8 @@ class EntryPage {
   String email;
   String password;
   String userRole;
+  String phoneNumber;
 
-  EntryPage({this.id, this.username, this.email, this.password, this.userRole});
+  EntryPage({this.id, this.username, this.email, this.password, this.userRole, this.phoneNumber});
 
 }

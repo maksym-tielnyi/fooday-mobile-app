@@ -4,6 +4,9 @@ class UserDataStorage {
   static const _USERNAME_KEY = "username";
   static const _EMAIL_KEY = "email";
   static const _ID_KEY = "id";
+  static const _PASSWORD_KEY = "password";
+  static const _PHONENUMBER_KEY = "phoneNumber";
+
   final _storage = FlutterSecureStorage();
 
   Future<String> getUsernameAsync() async {
@@ -28,5 +31,21 @@ class UserDataStorage {
 
   Future<void> setEmailAsync(String value) async {
     return await _storage.write(key: _EMAIL_KEY, value: value);
+  }
+
+  Future<String> getPasswordAsync() async {
+    return await _storage.read(key: _PASSWORD_KEY);
+  }
+
+  Future<void> setPasswordAsync(String value) async {
+    return await _storage.write(key: _PASSWORD_KEY, value: value);
+  }
+
+  Future<String> getPhoneNumberAsync() async {
+    return await _storage.read(key: _PHONENUMBER_KEY);
+  }
+
+  Future<void> setPhoneNumberAsync(String value) async {
+    return await _storage.write(key: _PHONENUMBER_KEY, value: value);
   }
 }

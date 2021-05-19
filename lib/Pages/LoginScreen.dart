@@ -52,7 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Padding(
                         padding: EdgeInsets.symmetric(vertical: 20),
                         child: Center(
-                            child: Text("Log in",
+                            child: Text("Авторизація",
                                 style:
                                     Theme.of(context).textTheme.headline6))))),
             Container(
@@ -62,7 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: TextFormField(
                   decoration: InputDecoration(
                     border: InputBorder.none,
-                    hintText: "Введите логин",
+                    hintText: "Введіть логин",
                     filled: false,
                   ),
                   onChanged: (String val) {
@@ -81,7 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: TextFormField(
                   decoration: InputDecoration(
                     border: InputBorder.none,
-                    hintText: "Введите пароль",
+                    hintText: "Введіть пароль",
                     filled: false,
                   ),
                   onChanged: (String val) {
@@ -110,7 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       }), (route) => false);
                     },
                     child: Text(
-                      "Регистрация",
+                      "Регістрація",
                       style: TextStyle(color: Colors.black),
                     ),
                   ),
@@ -119,10 +119,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 Container(
                   child: TextButton(
                     onPressed: () {
-                      print("забыли пароль");
+                      print("забули пароль");
                     },
                     child: Text(
-                      "Забыли пароль?",
+                      "Забули пароль?",
                       style: TextStyle(color: Colors.black),
                     ),
                   ),
@@ -140,7 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30))),
                 child: Text(
-                  "Вход",
+                  "Вхід",
                 ),
               ),
             ),
@@ -148,7 +148,7 @@ class _LoginScreenState extends State<LoginScreen> {
             Container(
               height: 50,
               child: Text(
-                "Войти с помощью:",
+                "Війти з допомогою:",
                 style: Theme.of(context).textTheme.headline6,
               ),
               margin: EdgeInsetsDirectional.fromSTEB(40, 20, 40, 0),
@@ -192,6 +192,7 @@ class _LoginScreenState extends State<LoginScreen> {
       storage.setUsernameAsync(user.username);
       storage.setEmailAsync(user.email);
       storage.setIdAsync(user.id);
+      storage.setPasswordAsync(user.password);
       switch (user.userRole) {
         case "customer":
           Navigator.pushAndRemoveUntil(context,
@@ -220,7 +221,10 @@ class _LoginScreenState extends State<LoginScreen> {
         id: row["user_id"],
         username: row["username"],
         email: row["email"],
-        userRole: row["role"]);
+        userRole: row["role"],
+        password: row["password"],
+        phoneNumber: row["phoneNumber"]);
+
   }
 
   Future<void> _onGoogleAuthPress() async {

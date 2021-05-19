@@ -177,7 +177,7 @@ class _RegistrationScreenState extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30))),
                 child: Text(
-                  "Зарегистрироваться",
+                  "Зарегіструватися",
                 ),
               ),
             ),
@@ -188,7 +188,7 @@ class _RegistrationScreenState extends StatelessWidget {
 
                 },
                 child: Text(
-                  "Уже есть аккаунт?",
+                  "Вже є аккаунт?",
                   style: TextStyle(color: Colors.black),
                 ),
               ),
@@ -215,6 +215,7 @@ class _RegistrationScreenState extends StatelessWidget {
         id: row["user_id"],
         username: row["username"],
         email: row["email"],
-        userRole: row["role"]);
+        userRole: row["role"],
+        phoneNumber: row["phoneNumber"]);
   }
 }

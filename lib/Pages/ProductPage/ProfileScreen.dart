@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:fooday_mobile_app/UserDataStorage.dart';
 import 'package:fooday_mobile_app/facebook__icon_icons.dart';
 import 'package:fooday_mobile_app/telegram_icon_icons.dart';
+import 'package:mysql1/mysql1.dart';
 
+import '../../DatabaseConnector.dart';
 import '../URL.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -19,6 +21,17 @@ class _ProfileScreenState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final headerEllipseRadius = Radius.elliptical(80, 40);
+
+    final loginController = new TextEditingController();
+    final passwordController = new TextEditingController();
+    final currentPasswordController = new TextEditingController();
+    final phoneNumberController = new TextEditingController();
+
+    String username;
+    String password;
+    String phoneNumber;
+    String currentPass;
+
     return Material(
       color: Colors.white,
       child: Center(
@@ -62,6 +75,8 @@ class _ProfileScreenState extends StatelessWidget {
                             padding:
                                 EdgeInsetsDirectional.fromSTEB(20, 5, 10, 5),
                             child: TextField(
+                              controller: loginController,
+                              onChanged: (login){username = login;},
                               decoration: InputDecoration(
                                 border: InputBorder.none,
                                 hintText: "Введіть новий логін",
@@ -101,6 +116,8 @@ class _ProfileScreenState extends StatelessWidget {
                             padding:
                                 EdgeInsetsDirectional.fromSTEB(20, 5, 10, 5),
                             child: TextField(
+                              controller: currentPasswordController,
+                              onChanged: (cpass){currentPass = cpass;},
                               decoration: InputDecoration(
                                 border: InputBorder.none,
                                 hintText: "Введіть поточний пароль",
@@ -121,6 +138,8 @@ class _ProfileScreenState extends StatelessWidget {
                             padding:
                                 EdgeInsetsDirectional.fromSTEB(20, 5, 10, 5),
                             child: TextField(
+                              controller: passwordController,
+                              onChanged: (pass){password = pass;},
                               decoration: InputDecoration(
                                 border: InputBorder.none,
                                 hintText: "Введіть новий пароль",
@@ -160,6 +179,8 @@ class _ProfileScreenState extends StatelessWidget {
                             padding:
                                 EdgeInsetsDirectional.fromSTEB(20, 5, 10, 5),
                             child: TextField(
+                              controller: phoneNumberController,
+                              onChanged: (phone){phoneNumber = phone;},
                               decoration: InputDecoration(
                                 border: InputBorder.none,
                                 hintText: "Введіть новий номер",
@@ -181,7 +202,27 @@ class _ProfileScreenState extends StatelessWidget {
                     ),
                     Container(
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () async {
+                          String pass = await UserDataStorage().getPasswordAsync();
+                          if(username != "" && username != null){
+                            UserDataStorage().setUsernameAsync(username);
+                          }
+                          if(pass == currentPass && password != "" && password != null){
+                            UserDataStorage().setPasswordAsync(password);
+                          }
+                          if(phoneNumber != "" && phoneNumber != null){
+                            UserDataStorage().setPhoneNumberAsync(phoneNumber);
+                          }
+                          const USER_QUERY = "Update user set username = ?, phone_number = ?, password = ? Where user_id = ?";
+                          String usern = await UserDataStorage().getUsernameAsync();
+                          String passw =  await UserDataStorage().getPasswordAsync();
+                          String phn = await UserDataStorage().getPhoneNumberAsync();
+                          int Id = await UserDataStorage().getIdAsync();
+
+                          Results results = await DatabaseConnector.getQueryResultsAsync(
+                              USER_QUERY, [usern, phn, passw, Id ]);
+
+                        },
                         style: ElevatedButton.styleFrom(
                             minimumSize: Size(100, 50),
                             side: BorderSide(color: Colors.red),

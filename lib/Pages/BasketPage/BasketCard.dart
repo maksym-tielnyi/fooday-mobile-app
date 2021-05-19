@@ -14,6 +14,13 @@ class BasketCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     BasketItem item = _basket[_index];
+    Widget imageWidget;
+    const double IMAGE_WIDTH = 100;
+    try {
+      imageWidget = Image.memory(item.product.imageBlob.toBytes(), width: IMAGE_WIDTH);
+    } catch (e) {
+      imageWidget = Container(child: Icon(Icons.fastfood), width: IMAGE_WIDTH);
+    }
     return Dismissible(
         key: GlobalKey(),
         onDismissed: (DismissDirection direction) {
@@ -29,10 +36,7 @@ class BasketCard extends StatelessWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Image.network(
-                          "https://images.unsplash.com/photo-1541963463532-d68292c34b19?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxleHBsb3JlLWZlZWR8MXx8fGVufDB8fHx8&w=1000&q=80",
-                          width: 100,
-                          height: 90),
+                      imageWidget,
                       SizedBox(width: 10),
                       Expanded(
                           child: Column(

@@ -248,6 +248,6 @@ WHERE product_id = ?
     """;
     int userId = await UserDataStorage().getIdAsync();
     return await DatabaseConnector.getQueryResultsAsync(
-        ADD_QUERY, [userId, _product.id, userId]);
+        ADD_QUERY, [userId, _product.id, 1]);
   }
 }

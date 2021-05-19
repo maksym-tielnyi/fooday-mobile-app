@@ -22,10 +22,15 @@ environment:
 
 dependencies:
   mysql1: ^0.19.2
-  carousel_slider: ^3.0.0
+  dio: ^4.0.0
+  flutter_polyline_points: ^0.2.6
+  google_maps_flutter: ^2.0.5
   flutter_simple_rating_bar: 0.0.3
   google_sign_in: ^5.0.3
   flutter_secure_storage: 4.2.0
+  location: ^4.1.1
+  geocoder: ^0.2.1
+
   flutter:
     sdk: flutter
 

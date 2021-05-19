@@ -3,7 +3,6 @@ import 'package:fooday_mobile_app/UserDataStorage.dart';
 import 'package:mysql1/mysql1.dart';
 import '../../DatabaseConnector.dart';
 import '../../Models/ProductItem.dart';
-import 'ImagesCarouselView.dart';
 import 'ProductRatingWidget.dart';
 import 'UserReviewWidget.dart';
 
